@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'personal.dart';
-import 'home.dart';
-import 'work.dart';
+import 'package:page_transition/page_transition.dart';
+import 'details.dart';
 
 void main() => runApp(MyApp());
 
@@ -187,24 +186,35 @@ class TaskCategoryModel {
   StatefulWidget route;
   Icon icon;
   Color color;
+  IconData ico;
   TaskCategoryModel(int num) {
     if (num == 0) {
       type = 'Personal';
-      route = PersonalPage();
       color = Color.fromRGBO(231, 129, 109, 1.0);
-      icon = Icon(Icons.account_circle,color: this.color,);
+      icon = Icon(
+        Icons.account_circle,
+        color: this.color,
+      );
+      ico = Icons.account_circle;
     } else if (num == 1) {
       type = 'Work';
-      route = WorkPage();
       color = Color.fromRGBO(99, 138, 223, 1.0);
-      icon = Icon(Icons.work,color: this.color,);
+      icon = Icon(
+        Icons.work,
+        color: this.color,
+      );
+      ico = Icons.work;
     } else {
       type = 'Home';
-      route = HomePage();
       color = Color.fromRGBO(111, 194, 173, 1.0);
-      icon = Icon(Icons.home,color: this.color,);
+      icon = Icon(
+        Icons.home,
+        color: this.color,
+      );
+      ico = Icons.home;
     }
     //print(type);
+    route = DetailsPage(model: this,);
   }
 }
 
@@ -221,69 +231,58 @@ class TaskCategoryCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           elevation: 5,
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Hero(
+          child: Hero(
               tag: model.type,
-              child: Container(
-                  width: 250,
-                  decoration: BoxDecoration(color: Colors.white),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              model.icon,
-                              Icon(
-                                Icons.more_vert,
-                                color: Colors.grey,
-                              ),
-                            ],
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Container(
+                    width: 250,
+                    decoration: BoxDecoration(color: Colors.white),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                model.icon,
+                                Icon(
+                                  Icons.more_vert,
+                                  color: Colors.grey,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        Padding(padding: EdgeInsets.all(64)),
-                        Material(
-                          color: Colors.transparent,
-                            child: Text('5 Tasks ',
-                                style: TextStyle(fontSize: 18))),
-                        Material(
-                          color: Colors.transparent,
-                            child: Text(
-                          model.type,
-                          style: TextStyle(fontSize: 24),
-                        )),
-                        Padding(
-                            padding: EdgeInsets.all(8),
-                            child: LinearProgressIndicator(
-                              value: 0.8,
-                            ))
-                      ])),
-            ),
-          ),
+                          Padding(padding: EdgeInsets.all(64)),
+                          Material(
+                              color: Colors.transparent,
+                              child: Text('5 Tasks ',
+                                  style: TextStyle(fontSize: 18))),
+                          Material(
+                              color: Colors.transparent,
+                              child: Text(
+                                model.type,
+                                style: TextStyle(fontSize: 24),
+                              )),
+                          Padding(
+                              padding: EdgeInsets.all(8),
+                              child: LinearProgressIndicator(
+                                value: 0.8,
+                              ))
+                        ])),
+              )),
         ),
       ),
-      onVerticalDragUpdate: (details) {
-        Navigator.of(context)
-            .push(RouteTransition(builder: (context) => model.route));
+      onVerticalDragEnd: (details) {
+        Navigator.of(context).push(PageTransition(
+            child: model.route,
+            type: PageTransitionType.scale,
+            duration: Duration(milliseconds: 200),
+            curve: Curves.easeInOutBack,
+            alignment: Alignment(125, 160)));
       },
     );
   }
-}
-
-class RouteTransition extends MaterialPageRoute {
-  RouteTransition({
-    WidgetBuilder builder,
-    RouteSettings settings,
-    bool maintainState = true,
-    bool fullscreenDialog = false,
-  }) : super(
-            builder: builder,
-            settings: settings,
-            fullscreenDialog: fullscreenDialog);
-  @override
-  Duration get transitionDuration => const Duration(milliseconds: 500);
 }
